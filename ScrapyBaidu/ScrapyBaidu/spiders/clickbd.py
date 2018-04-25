@@ -7,7 +7,8 @@ from ScrapyBaidu.items import baiduItemtj
 import os
 from scrapy.conf import settings
 from urllib import parse
-
+import linecache
+import random
 
 
 
@@ -15,9 +16,12 @@ class ClickbdSpider(scrapy.Spider):
     name = "clickbd"
     allowed_domains = ['m.baidu.com']
     def start_requests(self):
-        mucifile = open("D:\\bd\\234.csv", "r", encoding="utf_16")
-        for line in mucifile.readlines():
-            rows = line.split('\t')
+        for i in range(1,40005):
+            a = random.randrange(1, 40005) #1-9中生成随机数
+            theline = linecache.getline('D:\\bd\\456.txt', a)
+            # mucifile = open("D:\\bd\\234.csv", "r", encoding="utf_16")
+            # for line in mucifile.readlines():
+            rows = theline.split('\t')
             keyword = rows[2];
             if keyword != "":
                 yield Request('https://m.baidu.com/s?word=' + parse.quote(keyword), self.parse)
@@ -30,11 +34,13 @@ class ClickbdSpider(scrapy.Spider):
                 f.close()
                 for li in divList:
                     name= li.css('a::attr(href)').extract()
-                    with open('D:/url/' + parse.unquote(word) + '.html','a+',encoding='utf-8') as f:
-                        for url in name:
+
+                    for url in name:
+                        with open('D:/url/' + parse.unquote(word) + '.html','a+',encoding='utf-8') as f:
                             f.write(url+"\n")
-                            yield Request(url,self.parse)
-                        f.close()
+                            f.close()
+                        yield Request(url,self.parse)
+
         # related = response.css('#reword .rw-list a::text').extract()
         # if related:
         #     for rw in related:
