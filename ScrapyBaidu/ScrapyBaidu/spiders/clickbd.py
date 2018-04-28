@@ -24,22 +24,23 @@ class ClickbdSpider(scrapy.Spider):
             rows = theline.split('\t')
             keyword = rows[2];
             if keyword != "":
-                yield Request('https://m.baidu.com/s?word=' + parse.quote(keyword), self.parse)
+                for i in range(0,50,10):
+                    yield Request('https://m.baidu.com/s?word=' + parse.quote(keyword)+'&pn='+str(i), self.parse)
 
     def parse(self, response):
         if(response.text is not None):
             word = response.url.split('word=')[1]
             divList=response.xpath('//div[@class="ec_urlline"]')
-            with open('D:/url/' + parse.unquote(word) + '.html','w',encoding='utf-8') as f:
-                f.close()
-                for li in divList:
-                    name= li.css('a::attr(href)').extract()
+            # with open('E:/url/' + parse.unquote(word) + '.html','w',encoding='utf-8') as f:
+            #     f.close()
+            for li in divList:
+                name= li.css('a::attr(href)').extract()
 
-                    for url in name:
-                        with open('D:/url/' + parse.unquote(word) + '.html','a+',encoding='utf-8') as f:
-                            f.write(url+"\n")
-                            f.close()
-                        yield Request(url,self.parse)
+                for url in name:
+                        # with open('E:/url/' + parse.unquote(word) + '.html','a+',encoding='utf-8') as f:
+                        #     f.write(url+"\n")
+                        #     f.close()
+                    yield Request(url,self.parse)
 
         # related = response.css('#reword .rw-list a::text').extract()
         # if related:
